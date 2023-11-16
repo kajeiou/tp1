@@ -51,6 +51,12 @@ func actionAdd(d *dictionary.Dictionary, reader *bufio.Reader) {
 	word, _ := reader.ReadString('\n')
 	word = strings.TrimSpace(word)
 
+	_, exists := d.Get(word)
+	if exists {
+		fmt.Printf("Le mot '%s' existe déjà dans le dictionnaire.\n", word)
+		return
+	}
+
 	fmt.Print("Entrez la nouvelle définition : ")
 	definition, _ := reader.ReadString('\n')
 	definition = strings.TrimSpace(definition)
@@ -58,7 +64,6 @@ func actionAdd(d *dictionary.Dictionary, reader *bufio.Reader) {
 	d.Add(word, definition)
 
 	fmt.Printf("Le mot '%s' avec la définition '%s' a été ajouté.\n", word, definition)
-
 }
 
 func actionDefine(d *dictionary.Dictionary, reader *bufio.Reader) {
