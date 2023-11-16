@@ -1,51 +1,83 @@
 package dictionary
 
+import (
+	"encoding/csv"
+	"os"
+)
+
 type Word struct {
 	Definition string
 }
 
-func (w Word) String() string {
-	return w.Definition
-}
-
 type Dictionary struct {
-	words map[string]Word
+	filename string
+	words    []Word
 }
 
-// Dans la definition, je retourne un pointeur
-func New() *Dictionary {
-
-	// Je retourne l'adresse du nouveau dictionnaire avec &
-	return &Dictionary{
-		words: make(map[string]Word),
+func New(filename string) *Dictionary {
+	d := &Dictionary{
+		filename: filename,
+		words:    make([]Word, 0),
 	}
+	d.chargerFichier()
+	return d
 }
 
 func (d *Dictionary) Add(word string, definition string) {
 
-	newWord := Word{
-		Definition: definition,
-	}
-
-	d.words[word] = newWord
 }
 
 func (d *Dictionary) Get(word string) (*Word, bool) {
-	entry, exists := d.words[word]
-	if exists {
-		return &entry, true
-	}
-	return nil, false
+
 }
 
 func (d *Dictionary) Remove(word string) {
-	delete(d.words, word)
+
 }
 
-func (d *Dictionary) List() ([]string, map[string]Word) {
-	wordsList := make([]string, 0)
-	for word := range d.words {
-		wordsList = append(wordsList, word)
+func (d *Dictionary) List() ([]string, []Word) {
+
+}
+
+func (d *Dictionary) chargerFichier() error {
+	file, err := os.OpenFile(d.filename, os.O_RDWR|os.O_CREATE, os.ModePerm)
+	if err != nil {
+		return err
 	}
-	return wordsList, d.words
+	defer file.Close()
+
+	reader := csv.NewReader(file)
+	records, err := reader.ReadAll()
+	if err != nil {
+		return err
+	}
+
+	for _, record := range records {
+		if len(record) == 1 {
+			word := Word{Definition: record[0]}
+			d.words = append(d.words, word)
+		}
+	}
+
+	return nil
+}
+
+func (d *Dictionary) enregistrerFichier() error {
+	file, err := os.Create(d.filename)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	writer := csv.NewWriter(file)
+	defer writer.Flush()
+
+	for _, word := range d.words {
+		err := writer.Write([]string{word.Definition})
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }

@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	myDictionary := dictionary.New()
+	myDictionary := dictionary.New("dictionary.csv")
 	fmt.Println("Bienvenue dans le dico !")
 
 	for {
@@ -92,14 +92,13 @@ func actionRemove(d *dictionary.Dictionary, reader *bufio.Reader) {
 }
 
 func actionList(d *dictionary.Dictionary) {
-	wordsList, wordsMap := d.List()
+	wordsList, _ := d.List()
 	if len(wordsList) == 0 {
 		fmt.Println("Aucun mot dans le dico.")
 	} else {
 		fmt.Println("Liste des mots du dico:")
 		for _, word := range wordsList {
-			entry := wordsMap[word]
-			fmt.Printf("%s: %s\n", word, entry.Definition)
+			fmt.Printf("%s\n", word)
 		}
 	}
 }
